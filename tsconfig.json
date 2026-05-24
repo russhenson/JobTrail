@@ -4,10 +4,10 @@
         "types": ["jest"],
         "paths": {
             "@_assets/*": ["./src/assets/*"],
-            "@_components/*": ["./src/components/*"],
+            "@_components": ["./src/components/index.tsx"],
             "@_hooks/*": ["./src/hooks/*"],
             "@_navigation/*": ["./src/navigation/*"],
-            "@_screens/*": ["./src/screens/*"],
+            "@_screens": ["./src/screens/index.tsx"],
             "@_types/*": ["./src/types/*"],
             "@_utils/*": ["./src/utils/*"]
         }

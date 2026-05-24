@@ -1,7 +1,4 @@
-import { LoginScreen } from '@_screens/LoginScreen';
-import { JobListScreen } from '@_screens/JobListScreen';
-import { JobFormScreen } from '@_screens/JobFormScreen';
-
+import { JobFormScreen, JobListScreen, LoginScreen } from '@_screens';
 import { ScreenConfig } from '@_types/navigation';
 
 export const screens: ScreenConfig[] = [
