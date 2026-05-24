@@ -25,7 +25,7 @@ export const ScreenContainer = ({
     }
 
     return (
-        <SafeAreaView edges={safeAreaEdges} className={`${className} flex-1 ${noPadding ? 'p-0' : 'p-4'}`}>
+        <SafeAreaView edges={safeAreaEdges} className={`bg-brand-light ${className} flex-1 ${noPadding ? 'p-0' : 'p-4'}`}>
             {children}
         </SafeAreaView>
     );

@@ -7,16 +7,24 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Welcome'>;
 
 export const WelcomeScreen: React.FC<Props> = ({}) => {
     return (
-        <ScreenContainer safeAreaBottom noPadding className="bg-[#effffc]">
+        <ScreenContainer safeAreaBottom noPadding>
             <VStack className="flex-1">
-                <View className="h-1/2 items-center justify-center rounded-b-3xl bg-[#B8E9E5]">
-                    <Image source={require('@_assets/jobtrail-icon.png')} className="h-64 w-64" resizeMode="contain" />
+                <View className="rounded-b-7xl bg-brand-default flex-1 items-center justify-center overflow-hidden">
+                    <Image
+                        source={require('@_assets/jobtrail-icon.png')}
+                        className="h-full w-full opacity-80"
+                        resizeMode="cover"
+                    />
                 </View>
-                <VStack className="p-4">
-                    <Text>Welcome to JobTrail!</Text>
-                    <Text>So… how many job applications did you forget about this week?</Text>
-                    <Button title="Login" onPress={() => {}} />
-                    <Button title="Sign Up" onPress={() => {}} />
+                <VStack className="px-4 py-12">
+                    <Text className="text-brand-text mb-2 text-4xl font-bold">Never Lose a Job Application Again</Text>
+                    <Text className="text-brand-subtext text-2xl">
+                        Because "I think I applied there..." isn't a tracking system.
+                    </Text>
+                    <VStack className="mt-12 gap-4">
+                        <Button title="Login" onPress={() => {}} />
+                        <Button title="Sign Up" outlined onPress={() => {}} />
+                    </VStack>
                 </VStack>
             </VStack>
         </ScreenContainer>
