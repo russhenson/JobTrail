@@ -5,11 +5,11 @@ import { VStack, Button, ScreenContainer } from '@_components';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Welcome'>;
 
-export const WelcomeScreen: React.FC<Props> = ({}) => {
+export const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
     return (
         <ScreenContainer safeAreaBottom noPadding>
             <VStack className="flex-1">
-                <View className="rounded-b-7xl bg-brand-default flex-1 items-center justify-center overflow-hidden">
+                <View className="flex-1 items-center justify-center overflow-hidden rounded-b-7xl bg-brand-default">
                     <Image
                         source={require('@_assets/jobtrail-icon.png')}
                         className="h-full w-full opacity-80"
@@ -17,13 +17,13 @@ export const WelcomeScreen: React.FC<Props> = ({}) => {
                     />
                 </View>
                 <VStack className="px-4 py-12">
-                    <Text className="text-brand-text mb-2 text-4xl font-bold">Never Lose a Job Application Again</Text>
-                    <Text className="text-brand-subtext text-2xl">
+                    <Text className="mb-2 text-4xl font-bold text-brand-text">Never Lose a Job Application Again</Text>
+                    <Text className="text-2xl text-brand-subtext">
                         Because "I think I applied there..." isn't a tracking system.
                     </Text>
                     <VStack className="mt-12 gap-4">
                         <Button title="Login" onPress={() => {}} />
-                        <Button title="Sign Up" outlined onPress={() => {}} />
+                        <Button title="Sign Up" outlined onPress={() => navigation.navigate('SignUp')} />
                     </VStack>
                 </VStack>
             </VStack>

@@ -1,4 +1,4 @@
-import { JobFormScreen, JobListScreen, LoginScreen, WelcomeScreen } from '@_screens';
+import { JobFormScreen, JobListScreen, LoginScreen, WelcomeScreen, SignUpScreen } from '@_screens';
 import { ScreenConfig } from '@_types/navigation';
 
 export const screens: ScreenConfig[] = [
@@ -10,6 +10,11 @@ export const screens: ScreenConfig[] = [
     {
         name: 'Login',
         component: LoginScreen,
+        options: { headerShown: false },
+    },
+    {
+        name: 'SignUp',
+        component: SignUpScreen,
         options: { headerShown: false },
     },
     {

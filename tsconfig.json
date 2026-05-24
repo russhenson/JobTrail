@@ -9,7 +9,7 @@
             "@_navigation/*": ["./src/navigation/*"],
             "@_screens": ["./src/screens/index.tsx"],
             "@_types/*": ["./src/types/*"],
-            "@_utils/*": ["./src/utils/*"]
+            "@_utils": ["./src/utils/index.tsx"]
         }
     },
     "include": ["**/*.ts", "**/*.tsx", "nativewind-env.d.ts"],

@@ -5,6 +5,7 @@ export type RootStackParamList = {
     Login: undefined;
     Home: undefined;
     Form: { jobId?: string } | undefined;
+    SignUp: undefined;
 };
 
 export type ScreenConfig<T extends string = string> = {

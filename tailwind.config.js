@@ -11,6 +11,7 @@ module.exports = {
                     dark: '#036666',
                     text: '#2c3e3b',
                     subtext: '#545e5c',
+                    gray: '#bbbbbb',
                 },
                 primary: {
                     DEFAULT: '#38706b',
