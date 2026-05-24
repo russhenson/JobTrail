@@ -21,11 +21,8 @@ const app = express();
  * =========================
  */
 
-// Enable Cross-Origin requests (frontend ↔ backend)
-app.use(cors());
-
-// Parse incoming JSON requests
-app.use(express.json());
+app.use(cors()); // allows frontend to talk to backend
+app.use(express.json()); // reads JSON data from request body and makes it available in req.body
 
 /**
  * =========================
@@ -39,7 +36,7 @@ app.use('/auth', authRoutes);
 // Job application routes (CRUD)
 app.use('/jobs', jobRoutes);
 
-// Health check route (useful for testing server status)
+// Health check route (test if API is running)
 app.get('/health', (req, res) => {
   res.json({
     status: 'ok',

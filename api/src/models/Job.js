@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 
+// TODO: add datetime for application deadlines, interviews, etc.
 const jobSchema = new mongoose.Schema(
   {
     userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
