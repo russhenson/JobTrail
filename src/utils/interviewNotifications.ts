@@ -24,6 +24,7 @@ export const scheduleInterviewNotifications = async (job: {
 
     await ensureChannel();
 
+    // for demo purposes, we'll schedule 3 notifications at 10s, 30s, and 60s from now
     const triggers = [
         { seconds: 10, label: '10 seconds' },
         { seconds: 30, label: '30 seconds' },
@@ -54,10 +55,31 @@ export const scheduleInterviewNotifications = async (job: {
         );
     }
 
-    console.log(`Scheduled 3 notifications for interview: ${job.role} at ${job.company}`);
+    // create a trigger for the exact interview time
+    await notifee.createTriggerNotification(
+        {
+            id: `interview-${job.id}-exact`,
+            title: '🚨 Your Interview is Now',
+            body: `${job.role} at ${job.company} — Good luck! You've got this.`,
+            android: {
+                channelId: CHANNEL_ID,
+                importance: AndroidImportance.HIGH,
+                pressAction: { id: 'default' },
+            },
+            ios: { sound: 'default' },
+        },
+        {
+            type: TriggerType.TIMESTAMP,
+            timestamp: interviewTime.valueOf(), // exact interview time
+        },
+    );
+
+    console.log(`Scheduled 4 notifications for: ${job.role} at ${job.company}`);
 };
 
 export const cancelInterviewNotifications = async (jobId: string) => {
-    const triggers = [10, 30, 60];
-    await Promise.all(triggers.map(seconds => notifee.cancelNotification(`interview-${jobId}-${seconds}`)));
+    const ids = [10, 30, 60].map(s => `interview-${jobId}-${s}`);
+    ids.push(`interview-${jobId}-exact`); // ← cancel exact too
+
+    await Promise.all(ids.map(id => notifee.cancelNotification(id)));
 };

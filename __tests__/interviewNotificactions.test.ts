@@ -29,13 +29,13 @@ describe('scheduleInterviewNotifications', () => {
         expect(notifee.createTriggerNotification).not.toHaveBeenCalled();
     });
 
-    it('should schedule 3 notifications if interview is in the future', async () => {
+    it('should schedule 4 notifications if interview is in the future', async () => {
         await scheduleInterviewNotifications({
             ...mockJob,
             interviewDatetime: dayjs().add(1, 'day').toISOString(),
         });
 
-        expect(notifee.createTriggerNotification).toHaveBeenCalledTimes(3);
+        expect(notifee.createTriggerNotification).toHaveBeenCalledTimes(4);
     });
 
     it('should schedule notifications with correct ids', async () => {
@@ -50,6 +50,7 @@ describe('scheduleInterviewNotifications', () => {
         expect(ids).toContain('interview-job123-10');
         expect(ids).toContain('interview-job123-30');
         expect(ids).toContain('interview-job123-60');
+        expect(ids).toContain('interview-job123-exact');
     });
 
     it('should fire at 10s, 30s, 60s from now', async () => {
@@ -75,17 +76,33 @@ describe('scheduleInterviewNotifications', () => {
         expect(t60).toBeGreaterThanOrEqual(before + 60000);
         expect(t60).toBeLessThanOrEqual(after + 60000);
     });
+
+    it('should schedule exact notification at interview time', async () => {
+        const interviewDatetime = dayjs().add(1, 'day').toISOString();
+
+        await scheduleInterviewNotifications({
+            ...mockJob,
+            interviewDatetime,
+        });
+
+        const calls = (notifee.createTriggerNotification as jest.Mock).mock.calls;
+        const exactCall = calls.find(([notification]) => notification.id === 'interview-job123-exact');
+
+        expect(exactCall).toBeDefined();
+        expect(exactCall[1].timestamp).toBe(dayjs(interviewDatetime).valueOf());
+    });
 });
 
 describe('cancelInterviewNotifications', () => {
     beforeEach(() => jest.clearAllMocks());
 
-    it('should cancel all 3 notification ids for a job', async () => {
+    it('should cancel all 4 notification ids for a job', async () => {
         await cancelInterviewNotifications('job123');
 
-        expect(notifee.cancelNotification).toHaveBeenCalledTimes(3);
+        expect(notifee.cancelNotification).toHaveBeenCalledTimes(4);
         expect(notifee.cancelNotification).toHaveBeenCalledWith('interview-job123-10');
         expect(notifee.cancelNotification).toHaveBeenCalledWith('interview-job123-30');
         expect(notifee.cancelNotification).toHaveBeenCalledWith('interview-job123-60');
+        expect(notifee.cancelNotification).toHaveBeenCalledWith('interview-job123-exact');
     });
 });
