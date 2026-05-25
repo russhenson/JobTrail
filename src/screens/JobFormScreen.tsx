@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@_types/navigation';
@@ -14,6 +14,8 @@ import {
 } from '@_components';
 import { useForm, useWatch } from 'react-hook-form';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { api } from '@_utils';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { JOB_STATUSES, JOB_TYPES, JOB_SETUPS } from '@_constants';
 
@@ -38,6 +40,8 @@ export const JobFormScreen: React.FC<Props> = ({ route, navigation }) => {
 
     const jobId = route.params?.jobId;
     const isEdit = !!jobId;
+
+    const queryClient = useQueryClient();
 
     const {
         control,
@@ -66,6 +70,7 @@ export const JobFormScreen: React.FC<Props> = ({ route, navigation }) => {
     const [typeError, setTypeError] = useState(false);
     const [setupError, setSetupError] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
 
     const interviewDatetime = useWatch({ control, name: 'interviewDatetime' });
 
@@ -83,7 +88,7 @@ export const JobFormScreen: React.FC<Props> = ({ route, navigation }) => {
         handleSubmit(onSubmit)();
     };
 
-    const onSubmit = (data: Form) => {
+    const onSubmit = async (data: Form) => {
         if (!status || !jobType || !jobSetup) {
             setErrorMessage('Please fill in all required fields.');
             return;
@@ -91,8 +96,34 @@ export const JobFormScreen: React.FC<Props> = ({ route, navigation }) => {
 
         setErrorMessage(null);
 
-        const payload = { ...data, status, jobType, jobSetup };
-        console.log('PAYLOAD:', payload);
+        const payload = {
+            company: data.company,
+            role: data.role,
+            location: data.location,
+            dateApplied: data.dateApplied,
+            status,
+            jobType,
+            jobSetup,
+            salary: data.salary || null,
+            applicationLink: data.applicationLink || null,
+            interviewDatetime: data.interviewDatetime || null,
+            interviewLink: data.interviewLink || null,
+            recruiterName: data.recruiterName || null,
+            recruiterContact: data.recruiterContact || null,
+            notes: data.notes || null,
+        };
+
+        try {
+            setLoading(true);
+            await api.post('/jobs', payload);
+            await queryClient.invalidateQueries({ queryKey: ['jobs'] });
+            navigation.goBack();
+        } catch (err: any) {
+            console.error('CREATE JOB ERROR:', err.response?.data || err.message);
+            setErrorMessage(err.response?.data?.error || 'Failed to save. Please try again.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -287,7 +318,11 @@ export const JobFormScreen: React.FC<Props> = ({ route, navigation }) => {
                     {/* Submit */}
                     <VStack className="mb-8 mt-10 gap-3">
                         {errorMessage && <AlertMessage type="error" message={errorMessage} />}
-                        <Button title={isEdit ? 'Save Changes' : 'Add Application'} onPress={onPress} />
+                        <Button
+                            title={loading ? 'Saving...' : isEdit ? 'Save Changes' : 'Add Application'}
+                            onPress={onPress}
+                            disabled={loading}
+                        />
                         <Pressable onPress={() => navigation.goBack()} className="items-center py-2 active:opacity-60">
                             <Text className="text-sm text-brand-subtext">Cancel</Text>
                         </Pressable>

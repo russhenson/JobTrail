@@ -1,13 +1,16 @@
-import React from 'react';
-import { View, Text, Pressable } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@_types/navigation';
-import { HStack, VStack, Badge, DashboardHeader, BottomNav, JobCard } from '@_components';
-import { IconName } from '@_types/ui';
+import { VStack, DashboardHeader, BottomNav, JobCard } from '@_components';
+import { FlatList, ActivityIndicator } from 'react-native';
+import { useJobs } from '@_hooks/useJobs';
+import { View, Text } from 'react-native';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
 export const JobListScreen: React.FC<Props> = ({ navigation }) => {
+    const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, refetch, isRefetching } = useJobs();
+    const jobs = data?.pages.flatMap(page => page.jobs) ?? [];
+
     return (
         <VStack className="flex-1 bg-gray-50">
             <DashboardHeader
@@ -27,20 +30,45 @@ export const JobListScreen: React.FC<Props> = ({ navigation }) => {
                 onFollowUpPress={() => console.log('Go to follow-ups')}
                 onRecentPress={() => console.log('Go to recent')}
             />
-            
 
-            <JobCard
-                company="Acme Corporation"
-                role="Senior Product Designer"
-                status="Applied"
-                dateApplied="12 Jan 2025"
-                location="Manila, PH"
-                jobSetup="Hybrid"
-                jobType="Full-time"
-                salary="₱80,000 - ₱120,000 / mo"
-                interviewDatetime="20 Jan 2025, 10:00 AM"
-                recruiterName="Jane Doe"
-                notes="Referral from a friend. Good vibes."
+            <FlatList
+                data={jobs}
+                keyExtractor={item => item._id}
+                contentContainerStyle={{ padding: 16, gap: 12 }}
+                renderItem={({ item }) => (
+                    <JobCard
+                        company={item.company}
+                        role={item.role}
+                        status={item.status}
+                        dateApplied={item.dateApplied}
+                        location={item.location}
+                        jobSetup={item.jobSetup}
+                        jobType={item.jobType}
+                        salary={item.salary}
+                        interviewDatetime={item.interviewDatetime}
+                        recruiterName={item.recruiterName}
+                        notes={item.notes}
+                    />
+                )}
+                onEndReached={() => {
+                    if (hasNextPage && !isFetchingNextPage) fetchNextPage();
+                }}
+                onEndReachedThreshold={0.5}
+                onRefresh={refetch}
+                refreshing={isRefetching}
+                ListFooterComponent={
+                    isFetchingNextPage ? (
+                        <ActivityIndicator size="small" color="#56ab91" style={{ marginVertical: 16 }} />
+                    ) : null
+                }
+                ListEmptyComponent={
+                    !isLoading ? (
+                        <View className="items-center py-12">
+                            <Text className="text-brand-subtext">No applications yet.</Text>
+                            <Text className="text-brand-gray text-sm">Tap + to add your first one.</Text>
+                        </View>
+                    ) : null
+                }
             />
 
             <BottomNav />
