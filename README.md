@@ -1,97 +1,191 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# JobTrail
 
-# Getting Started
+A job application tracker built for the hustle. Log every application, track your status, and never lose track of where you applied — because in this economy, you need all the help you can get.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+---
 
-## Step 1: Start Metro
+## Screenshots
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+> _Add screenshots here_
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+---
 
-```sh
-# Using npm
-npm start
+## Tech Stack
 
-# OR using Yarn
-yarn start
+**Mobile**
+- React Native CLI
+- TypeScript
+- NativeWind (Tailwind for RN)
+- TanStack Query
+- React Hook Form
+- Axios
+- Notifee (local notifications)
+- Day.js
+- Jest (unit testing)
+
+**Backend**
+- Node.js + Express
+- MongoDB + Mongoose
+- JWT Authentication
+- Railway (hosted)
+
+---
+
+## Features
+
+- Register and log in securely
+- Add, edit, and delete job applications
+- Track status: Saved, Applied, Follow Up, Interview, Offer, Hired, Rejected
+- Filter by status and application date
+- Dashboard with live stats per status
+- Interview reminders via local notifications (10s, 30s, 1min, and exact time)
+- Motivational nudges when you need them most
+
+---
+
+## Project Structure
+
+```
+JobTrail/
+├── api/          # Express backend
+└── src/          # React Native app
 ```
 
-## Step 2: Build and run your app
+---
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+## Getting Started
 
-### Android
+### Prerequisites
 
-```sh
-# Using npm
-npm run android
+- Node.js `>= 22.11.0`
+- Yarn
+- Android Studio (for Android) or Xcode (for iOS, macOS only)
+- MongoDB (only if running the API locally)
 
-# OR using Yarn
+---
+
+### 1. Clone the repo
+
+```bash
+git clone https://github.com/russhenson/JobTrail.git
+cd JobTrail
+```
+
+---
+
+### 2. Environment Variables
+
+Only the API requires an `.env` file.
+
+📁 Download from Google Drive: **[JobTrail Docs](https://drive.google.com/drive/folders/1AwxIuZwmUhH5GzvmlbcT7PGBSVePMKzb?usp=sharing)**
+
+Download `env.txt` and rename it to `.env`, then place it in the `api/` directory.
+
+> The mobile app does not require an `.env` file.
+> In development (`__DEV__`), it points to your local API.
+> In release builds, it points to the deployed Railway API automatically.
+
+---
+
+### 3. Install dependencies
+
+```bash
+# Mobile
+yarn install
+yarn ios:install   # iOS only — installs CocoaPods
+
+# API
+cd api && yarn install
+```
+
+---
+
+### 4. Run the API
+
+#### Option A — Use the deployed API (recommended)
+Already live at: https://jobtrail-production-f242.up.railway.app
+
+No setup needed. Release builds hit this automatically.
+
+#### Option B — Run locally
+```bash
+cd api
+yarn dev
+```
+
+> Make sure MongoDB is running and `api/.env` is in place.
+> The mobile app in `__DEV__` mode will point to `localhost:5050` automatically.
+
+---
+
+### 5. Run the app
+
+#### Android
+```bash
 yarn android
 ```
 
-### iOS
-
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
-
-```sh
-bundle install
-```
-
-Then, and every time you update your native dependencies, run:
-
-```sh
-bundle exec pod install
-```
-
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
-
-```sh
-# Using npm
-npm run ios
-
-# OR using Yarn
+#### iOS
+```bash
 yarn ios
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+> ⚠️ `yarn ios` requires macOS with Xcode installed. It **cannot** be run on Windows.
+> The Expo Go app **cannot** be used — this project uses React Native CLI.
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+---
 
-## Step 3: Modify your app
+### 6. Run tests
 
-Now that you have successfully run the app, let's make changes!
+```bash
+yarn test
+```
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+---
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+## Installing the App
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+### Android APK
 
-## Congratulations! :tada:
+📁 Download the APK from Google Drive: **[JobTrail Docs](https://drive.google.com/drive/folders/1AwxIuZwmUhH5GzvmlbcT7PGBSVePMKzb?usp=sharing)**
 
-You've successfully run and modified your React Native App. :partying_face:
+Enable **Install from Unknown Sources** on your Android device before installing.
 
-### Now what?
+To build the APK yourself:
+```bash
+cd android
+./gradlew assembleRelease
+```
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
+Output: `android/app/build/outputs/apk/release/app-release.apk`
 
-# Troubleshooting
+### iOS
 
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+> ⚠️ TestFlight distribution requires an active Apple Developer account.
+> An iOS build cannot be provided without one.
+>
+> To run on iOS, clone the repo and run `yarn ios` on a macOS machine with Xcode installed.
 
-# Learn More
+---
 
-To learn more about React Native, take a look at the following resources:
+## API Endpoints
 
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+Base URL: `https://jobtrail-production-f242.up.railway.app`
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/auth/register` | Register a new user |
+| POST | `/auth/login` | Login |
+| GET | `/jobs` | Get paginated jobs (`?status=` `?dateFilter=`) |
+| GET | `/jobs/dashboard` | Get dashboard stats |
+| POST | `/jobs` | Create a job application |
+| PUT | `/jobs/:id` | Update a job application |
+| DELETE | `/jobs/:id` | Delete a job application |
+
+---
+
+## Notes
+
+- API is hosted on Railway — first request may have a short cold start delay
+- Notifications are local only and do not persist across reinstalls (demo purposes)
+- iOS notification permission prompt appears on first launch
