@@ -6,7 +6,7 @@ import { AuthStorage } from './authStorage';
 // Android emulator uses 10.0.2.2 to reach localhost
 const BASE_URL =
     Platform.OS === 'android'
-        ? 'http://10.0.2.2:5000'
+        ? 'http://10.0.2.2:5050'
         : Config.API_URL;
 
 export const api = axios.create({

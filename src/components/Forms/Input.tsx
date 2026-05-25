@@ -17,9 +17,11 @@ interface InputProps<T extends FieldValues> {
     required?: boolean;
     pattern?: RegExp;
     maxLength?: number;
+    minLength?: number;
     rightIconName?: IconName;
     onIconPress?: () => void;
     secureTextEntry?: boolean;
+    validate?: (value: any, formValues?: any) => string | boolean;
 }
 
 export const Input = <T extends FieldValues>({
@@ -32,9 +34,11 @@ export const Input = <T extends FieldValues>({
     pattern = /.*/,
     disabled,
     maxLength = 200,
+    minLength,
     rightIconName,
     onIconPress,
     secureTextEntry,
+    validate,
 }: InputProps<T>) => {
     const error = errors[name] as FieldError | undefined;
 
@@ -68,6 +72,10 @@ export const Input = <T extends FieldValues>({
                         value: maxLength,
                         message: `${label || formatName(String(name))} should not exceed ${maxLength} characters.`,
                     },
+                    minLength: {
+                        value: minLength || 1,
+                        message: `${label || formatName(String(name))} should be at least ${minLength} characters`,
+                    },
                     pattern: {
                         value: formatName(String(name)) === 'email' ? /^\S+@\S+\.\S+$/ : pattern,
                         message: `Please enter a valid ${label || formatName(String(name))}.`,
@@ -76,6 +84,9 @@ export const Input = <T extends FieldValues>({
                         // Prevent inputs that are only whitespace
                         if (typeof value === 'string' && /^\s+$/.test(value)) {
                             return `Invalid ${label || formatName(String(name))}.`;
+                        }
+                        if (validate) {
+                            return validate(value);
                         }
 
                         return true;
@@ -112,7 +123,7 @@ export const Input = <T extends FieldValues>({
                 )}
             />
 
-            {error?.message && <Text className="text-sm text-red-500 mt-1">{error.message}</Text>}
+            {error?.message && <Text className="mt-1 text-sm text-red-500">{error.message}</Text>}
         </VStack>
     );
 };
