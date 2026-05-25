@@ -4,7 +4,7 @@ import { RootStackParamList } from '@_types/navigation';
 import { VStack, Button, ScreenContainer, Input, HStack, AlertMessage } from '@_components';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
-import { api, AuthStorage } from '@_utils';
+import { api, AuthStorage, authEvents } from '@_utils';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
 type Form = {
@@ -32,6 +32,7 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
 
             const res = await api.post('/auth/login', data);
             await AuthStorage.saveSession(res.data);
+            authEvents.emit();
         } catch (err: any) {
             setErrorMessage(err.response?.data?.error || 'An error occurred. Please try again.');
         } finally {
