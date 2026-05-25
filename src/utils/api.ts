@@ -1,9 +1,9 @@
 import axios from 'axios';
-import Config from 'react-native-config';
+// import Config from 'react-native-config';
 import { AuthStorage } from './authStorage';
 
 export const api = axios.create({
-    baseURL: Config.API_URL,
+    baseURL: 'jobtrail-production-f242.up.railway.app',
     headers: {
         'Content-Type': 'application/json',
     },
