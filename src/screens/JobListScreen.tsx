@@ -31,8 +31,7 @@ export const JobListScreen: React.FC<Props> = ({ navigation }) => {
         useCallback(() => {
             queryClient.invalidateQueries({ queryKey: ['jobs'] });
             queryClient.invalidateQueries({ queryKey: ['jobs-dashboard'] });
-            // eslint-disable-next-line react-hooks/exhaustive-deps
-        }, []),
+        }, [queryClient]),
     );
 
     const handleRefresh = async () => {

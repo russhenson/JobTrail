@@ -22,7 +22,6 @@ export const StatusChips: React.FC<StatusChipsProps> = ({
         <View className="flex-row flex-wrap gap-2">
             {STATUS_CHIPS.map(({ label, bg, border, text }) => {
                 const count = statusCounts?.[label as keyof StatusCounts] ?? 0;
-                console.log('STATUS COUNTS:', statusCounts, '| label:', label, '| count:', count);
 
                 const isActive = activeStatus === label;
                 return (
