@@ -61,7 +61,7 @@ export const SignUpScreen: React.FC<Props> = ({ navigation }) => {
     };
 
     return (
-        <ScreenContainer safeAreaBottom noPadding>
+        <ScreenContainer safeAreaBottom noPadding keyboardAvoid>
             <VStack className="flex-1">
                 <View className="h-[30%] items-center justify-center overflow-hidden rounded-b-7xl bg-brand-default">
                     <Image
