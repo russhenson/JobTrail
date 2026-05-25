@@ -3,7 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 
 import AuthNavigator from './AuthNavigator';
 import AppNavigator from './AppNavigator';
-import { AuthStorage } from '@_utils';
+import { AuthStorage, authEvents } from '@_utils';
 
 export default function RootNavigator() {
     const [loading, setLoading] = useState(true);
@@ -23,13 +23,13 @@ export default function RootNavigator() {
         init();
     }, []);
 
-    // re-check auth when app comes back to foreground
+    // login/logout listener
     useEffect(() => {
-        const interval = setInterval(() => {
+        const unsubscribe = authEvents.subscribe(() => {
             checkAuth();
-        }, 1000);
+        });
 
-        return () => clearInterval(interval);
+        return unsubscribe;
     }, []);
 
     if (loading) return null;
