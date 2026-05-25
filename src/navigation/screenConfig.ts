@@ -5,10 +5,7 @@ export const screens: ScreenConfig[] = [
     {
         name: 'Home',
         component: JobListScreen,
-        options: {
-            title: 'JobTrail',
-            headerTitleAlign: 'center',
-        },
+        options: { headerShown: false },
     },
     {
         name: 'Form',

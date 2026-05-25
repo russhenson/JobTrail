@@ -50,7 +50,7 @@ export const SignUpScreen: React.FC<Props> = ({ navigation }) => {
             };
 
             await api.post('/auth/register', payload);
-            navigation.replace('Login');
+            navigation.replace('Login', { registrationSuccess: true });
         } catch (err: any) {
             console.log('REGISTER ERROR:', err.response?.data || err.message);
 

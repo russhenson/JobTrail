@@ -12,7 +12,7 @@ type Form = {
     password: string;
 };
 
-export const LoginScreen: React.FC<Props> = ({ navigation }) => {
+export const LoginScreen: React.FC<Props> = ({ navigation, route }) => {
     const {
         control,
         handleSubmit,
@@ -55,6 +55,11 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
                     <Text className=" text-brand-subtext">
                         Pick up where you left off (hopefully not 37 applications ago).
                     </Text>
+                    {route?.params?.registrationSuccess && (
+                        <View className="pt-4">
+                            <AlertMessage type="success" message="Your account is ready! Sign in to get started." />
+                        </View>
+                    )}
                 </VStack>
                 <VStack className="gap-4 p-4">
                     <Input name="username" control={control} errors={errors} placeholder="Username" required />
