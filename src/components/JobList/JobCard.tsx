@@ -4,6 +4,7 @@ import { HStack, VStack, Badge } from '@_components';
 import { IconName } from '@_types/ui';
 import Icon from '@react-native-vector-icons/material-design-icons';
 import { Job } from '@_types/navigation';
+import dayjs from 'dayjs';
 
 type JobCardProps = {
     onPress: () => void;
@@ -45,7 +46,7 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onPress }) => {
             {/* Top row: date + status */}
             <HStack className="mb-3 items-center justify-between">
                 {dateApplied ? (
-                    <Text className="text-xs tracking-wide text-gray-400">Applied {dateApplied}</Text>
+                    <Text className="text-xs tracking-wide text-gray-400">Applied {dayjs(dateApplied).format('MMM D, YYYY')}</Text>
                 ) : (
                     <View />
                 )}
@@ -79,7 +80,7 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onPress }) => {
                     {interviewDatetime && (
                         <HStack className="items-center gap-1.5">
                             <Icon name="calendar-clock" size={14} color="#9ca3af" />
-                            <Text className="text-sm text-gray-400">Interview: {interviewDatetime}</Text>
+                            <Text className="text-sm text-gray-400">Interview: {dayjs(interviewDatetime).format('MMM D, YYYY [at] h:mm A')}</Text>
                         </HStack>
                     )}
                     {recruiterName && (
