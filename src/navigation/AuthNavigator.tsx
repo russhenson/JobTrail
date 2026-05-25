@@ -1,14 +1,14 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { screens } from './screenConfig';
+import { authScreens } from './screenConfig';
 import { RootStackParamList } from '../types/navigation';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-export default function AppNavigator() {
+export default function AuthNavigator() {
     return (
-        <Stack.Navigator initialRouteName="Home">
-            {screens.map(screen => (
+        <Stack.Navigator initialRouteName="Welcome">
+            {authScreens.map(screen => (
                 <Stack.Screen
                     key={screen.name}
                     name={screen.name as keyof RootStackParamList}

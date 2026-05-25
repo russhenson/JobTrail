@@ -9,6 +9,7 @@ export const JobListScreen: React.FC<Props> = ({ navigation }) => {
         <View>
             <Text>Job List Screen</Text>
             <Button title="Add Job" onPress={() => navigation.navigate('Form')} />
+            <Button title="Logout" onPress={() => {}} />
         </View>
     );
 }

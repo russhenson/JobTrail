@@ -32,8 +32,6 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
 
             const res = await api.post('/auth/login', data);
             await AuthStorage.saveSession(res.data);
-
-            navigation.reset({ index: 0, routes: [{ name: 'Home' }] });
         } catch (err: any) {
             setErrorMessage(err.response?.data?.error || 'An error occurred. Please try again.');
         } finally {
