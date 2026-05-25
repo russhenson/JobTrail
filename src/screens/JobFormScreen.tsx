@@ -11,6 +11,7 @@ import {
     ChipGroup,
     FieldLabel,
     SectionLabel,
+    DateTimePickerField,
 } from '@_components';
 import { useForm, useWatch } from 'react-hook-form';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -205,12 +206,11 @@ export const JobFormScreen: React.FC<Props> = ({ route, navigation }) => {
                         </View>
                         <View>
                             <FieldLabel label="Date Applied" required />
-                            <Input
+                            <DateTimePickerField
                                 name="dateApplied"
                                 control={control}
-                                errors={errors}
-                                placeholder="e.g. 12 Jan 2025"
-                                required
+                                placeholder="Select date applied"
+                                pickerMode="date"
                             />
                         </View>
                     </VStack>
@@ -290,11 +290,11 @@ export const JobFormScreen: React.FC<Props> = ({ route, navigation }) => {
                     <VStack className="gap-4">
                         <View>
                             <FieldLabel label="Interview Date & Time" optional />
-                            <Input
+                            <DateTimePickerField
                                 name="interviewDatetime"
                                 control={control}
-                                errors={errors}
-                                placeholder="e.g. 20 Jan 2025, 10:00 AM"
+                                placeholder="Select interview date & time"
+                                pickerMode="datetime"
                             />
                         </View>
                         {!!interviewDatetime && (

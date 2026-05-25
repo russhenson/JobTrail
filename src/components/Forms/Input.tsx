@@ -98,7 +98,7 @@ export const Input = <T extends FieldValues>({
                 render={({ field: { onChange, value } }) => (
                     <VStack className="relative">
                         <TextInput
-                            className={`rounded-2xl border ${borderColor} placeholder:text-brand-gray px-4 py-3 text-sm `}
+                            className={`rounded-2xl border ${borderColor} placeholder:text-brand-gray px-4 py-3 text-sm leading-tight `}
                             placeholder={placeholder}
                             value={value ?? ''}
                             editable={!disabled}
