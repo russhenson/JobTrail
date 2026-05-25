@@ -16,7 +16,7 @@ export default function AppNavigator() {
                         key={screen.name}
                         name={screen.name as keyof RootStackParamList}
                         component={screen.component}
-                        options={{ ...screen.options, animationTypeForReplace: 'push', animation: 'slide_from_right' }}
+                        options={{ ...screen.options }}
                     />
                 ))}
             </Stack.Navigator>

@@ -37,7 +37,7 @@ export const SignUpScreen: React.FC<Props> = ({ navigation }) => {
                     />
                 </View>
                 <VStack className="mb-2 mt-6 px-4">
-                    <Text className="text-3xl font-bold text-brand-text">Time to Track the Chaos</Text>
+                    <Text className="text-2xl font-bold text-brand-text">Time to Track the Chaos</Text>
                     <Text className=" text-brand-subtext">
                         Sign up so you can finally stop guessing where you applied and when.
                     </Text>
@@ -70,7 +70,7 @@ export const SignUpScreen: React.FC<Props> = ({ navigation }) => {
                 </VStack>
                 <HStack className="mt-4 justify-center px-4">
                     <Text className="text-brand-subtext">Already have an account?</Text>
-                    <Pressable onPress={() => navigation.navigate('Login')} className="active:opacity-50">
+                    <Pressable onPress={() => navigation.replace('Login')} className="active:opacity-50">
                         <Text className="text-brand-default"> Login</Text>
                     </Pressable>
                 </HStack>

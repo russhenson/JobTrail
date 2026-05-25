@@ -22,7 +22,7 @@ export const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
                         Because "I think I applied there..." isn't a tracking system.
                     </Text>
                     <VStack className="mt-12 gap-4">
-                        <Button title="Login" onPress={() => {}} />
+                        <Button title="Login" onPress={() => navigation.navigate('Login')} />
                         <Button title="Sign Up" outlined onPress={() => navigation.navigate('SignUp')} />
                     </VStack>
                 </VStack>
