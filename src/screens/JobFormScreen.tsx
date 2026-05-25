@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text, Pressable } from 'react-native';
+import { View, Text, Pressable, Alert } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@_types/navigation';
 import {
@@ -17,19 +17,16 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { api } from '@_utils';
 import { useQueryClient } from '@tanstack/react-query';
 import { Job } from '@_types/navigation';
-
 import { JOB_STATUSES, JOB_TYPES, JOB_SETUPS } from '@_constants';
+import Icon from '@react-native-vector-icons/material-design-icons';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Form'>;
 
 export const JobFormScreen: React.FC<Props> = ({ route, navigation }) => {
     const insets = useSafeAreaInsets();
-
     const params = route.params;
-
     const jobId = params?.id;
     const job = params?.job;
-
     const isEdit = !!jobId;
 
     const queryClient = useQueryClient();
@@ -62,13 +59,12 @@ export const JobFormScreen: React.FC<Props> = ({ route, navigation }) => {
     const [typeError, setTypeError] = useState(false);
     const [setupError, setSetupError] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
     const [loading, setLoading] = useState(false);
+    const [deleting, setDeleting] = useState(false);
 
     const interviewDatetime = useWatch({ control, name: 'interviewDatetime' });
 
     const onPress = () => {
-        // validate chips first regardless of RHF
         const hasStatusError = !status;
         const hasTypeError = !jobType;
         const hasSetupError = !jobSetup;
@@ -77,7 +73,6 @@ export const JobFormScreen: React.FC<Props> = ({ route, navigation }) => {
         setTypeError(hasTypeError);
         setSetupError(hasSetupError);
 
-        // then let RHF validate its own fields
         handleSubmit(onSubmit)();
     };
 
@@ -108,32 +103,70 @@ export const JobFormScreen: React.FC<Props> = ({ route, navigation }) => {
 
         try {
             setLoading(true);
-            await api.post('/jobs', payload); // todo: differentiate create vs update endpoint
+
+            if (isEdit) {
+                await api.put(`/jobs/${jobId}`, payload);
+            } else {
+                await api.post('/jobs', payload);
+            }
+
             await queryClient.invalidateQueries({ queryKey: ['jobs'] });
             navigation.goBack();
         } catch (err: any) {
-            console.error('CREATE JOB ERROR:', err.response?.data || err.message);
+            console.error('SAVE JOB ERROR:', err.response?.data || err.message);
             setErrorMessage(err.response?.data?.error || 'Failed to save. Please try again.');
         } finally {
             setLoading(false);
         }
     };
 
+    const onDelete = () => {
+        Alert.alert('Delete Application', `Remove ${job?.role} at ${job?.company}? This can't be undone.`, [
+            { text: 'Cancel', style: 'cancel' },
+            {
+                text: 'Delete',
+                style: 'destructive',
+                onPress: async () => {
+                    try {
+                        setDeleting(true);
+                        await api.delete(`/jobs/${jobId}`);
+                        await queryClient.invalidateQueries({ queryKey: ['jobs'] });
+                        navigation.goBack();
+                    } catch (err: any) {
+                        console.error('DELETE JOB ERROR:', err.response?.data || err.message);
+                        setErrorMessage(err.response?.data?.error || 'Failed to delete. Please try again.');
+                    } finally {
+                        setDeleting(false);
+                    }
+                },
+            },
+        ]);
+    };
+
     return (
         <ScreenContainer noPadding keyboardAvoid scrollable>
             <VStack className="flex-1">
                 {/* Header */}
-                <View
-                    className="items-center justify-center bg-brand-default px-6 pb-6 pt-14"
-                    style={{ paddingTop: insets.top + 10 }}>
-                    <Text className="text-2xl font-bold text-white">
-                        {isEdit ? 'Fixing Your Lies' : 'Adding to the Pile'}
-                    </Text>
-                    <Text className="mt-1 text-sm text-white/70">
-                        {isEdit
-                            ? 'Something changed? Or you just finally read the job post.'
-                            : "Spray and pray. We don't judge."}
-                    </Text>
+                <View className="justify-center bg-brand-default px-6 pb-6" style={{ paddingTop: insets.top + 30 }}>
+                    {/* Back button — absolute left */}
+                    <Pressable
+                        onPress={() => navigation.goBack()}
+                        className="absolute left-4 top-0 z-10 p-2 active:opacity-60"
+                        style={{ paddingTop: insets.top + 10 }}>
+                        <Icon name="arrow-left" size={22} color="white" />
+                    </Pressable>
+
+                    {/* Centered text */}
+                    <View className="items-center">
+                        <Text className="text-2xl font-bold text-white">
+                            {isEdit ? 'Fixing Your Lies' : 'Adding to the Pile'}
+                        </Text>
+                        <Text className="mt-1 text-sm text-white/70">
+                            {isEdit
+                                ? 'Something changed? Or you just finally read the job post.'
+                                : "Spray and pray. We don't judge."}
+                        </Text>
+                    </View>
                 </View>
 
                 <VStack className="p-4">
@@ -311,14 +344,23 @@ export const JobFormScreen: React.FC<Props> = ({ route, navigation }) => {
                     {/* Submit */}
                     <VStack className="mb-8 mt-10 gap-3">
                         {errorMessage && <AlertMessage type="error" message={errorMessage} />}
+
                         <Button
                             title={loading ? 'Saving...' : isEdit ? 'Save Changes' : 'Add Application'}
                             onPress={onPress}
-                            disabled={loading}
+                            disabled={loading || deleting}
                         />
-                        <Pressable onPress={() => navigation.goBack()} className="items-center py-2 active:opacity-60">
-                            <Text className="text-sm text-brand-subtext">Cancel</Text>
-                        </Pressable>
+
+                        {isEdit && (
+                            <Pressable
+                                onPress={onDelete}
+                                disabled={deleting || loading}
+                                className="items-center rounded-xl border border-red-200 bg-red-50 py-3 active:opacity-70">
+                                <Text className="text-sm font-medium text-red-500">
+                                    {deleting ? 'Deleting...' : 'Delete Application'}
+                                </Text>
+                            </Pressable>
+                        )}
                     </VStack>
                 </VStack>
             </VStack>

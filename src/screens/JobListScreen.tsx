@@ -4,11 +4,14 @@ import { DashboardHeader, BottomNav, JobCard } from '@_components';
 import { FlatList, ActivityIndicator } from 'react-native';
 import { useJobs } from '@_hooks/useJobs';
 import { View, Text } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
+import { useCallback, useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
 export const JobListScreen: React.FC<Props> = ({ navigation }) => {
-    const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, refetch, isRefetching } = useJobs();
+    const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, refetch } = useJobs();
     const jobs =
         data?.pages.flatMap(page =>
             page.jobs.map(job => ({
@@ -16,6 +19,24 @@ export const JobListScreen: React.FC<Props> = ({ navigation }) => {
                 id: job._id,
             })),
         ) ?? [];
+
+    const [isPulling, setIsPulling] = useState(false);
+
+    const queryClient = useQueryClient();
+
+    useFocusEffect(
+        useCallback(() => {
+            queryClient.invalidateQueries({ queryKey: ['jobs'] });
+            // eslint-disable-next-line react-hooks/exhaustive-deps
+        }, []),
+    );
+
+    const handleRefresh = async () => {
+        setIsPulling(true);
+        await refetch();
+        setIsPulling(false);
+    };
+
     return (
         <View style={{ flex: 1 }} className="bg-white">
             <View style={{ flexShrink: 0 }}>
@@ -55,8 +76,8 @@ export const JobListScreen: React.FC<Props> = ({ navigation }) => {
                     if (hasNextPage && !isFetchingNextPage) fetchNextPage();
                 }}
                 onEndReachedThreshold={0.5}
-                onRefresh={refetch}
-                refreshing={isRefetching}
+                onRefresh={handleRefresh}
+                refreshing={isPulling}
                 ListEmptyComponent={
                     !isLoading ? (
                         <View className="items-center py-12">

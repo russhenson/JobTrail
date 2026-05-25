@@ -75,11 +75,10 @@ exports.createJob = async (req, res) => {
 
 exports.updateJob = async (req, res) => {
     try {
-        const job = await Job.findOneAndUpdate(
-            { _id: req.params.id, userId: req.user.userId }, // ensure ownership
-            req.body,
-            { new: true, runValidators: true },
-        );
+        const job = await Job.findOneAndUpdate({ _id: req.params.id, userId: req.user.userId }, req.body, {
+            returnDocument: 'after',
+            runValidators: true,
+        });
 
         if (!job) return res.status(404).json({ error: 'Job not found.' });
 
