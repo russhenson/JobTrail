@@ -11,18 +11,23 @@ import { useQueryClient } from '@tanstack/react-query';
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
 export const JobListScreen: React.FC<Props> = ({ navigation }) => {
-    const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, refetch } = useJobs();
-    const jobs =
-        data?.pages.flatMap(page =>
-            page.jobs.map(job => ({
-                ...job,
-                id: job._id,
-            })),
-        ) ?? [];
+    const [activeStatus, setActiveStatus] = useState<string | undefined>(undefined);
+    const [activeDate, setActiveDate] = useState('All');
 
-    const [isPulling, setIsPulling] = useState(false);
+    const filters = {
+        status: activeStatus,
+        dateFilter: activeDate !== 'All' ? activeDate : undefined,
+    };
+
+    const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, refetch } = useJobs(filters);
 
     const queryClient = useQueryClient();
+    const [isPulling, setIsPulling] = useState(false);
+
+    // pull dashboard data from first page
+    const firstPage = data?.pages[0];
+
+    const jobs = data?.pages.flatMap(page => page.jobs.map(job => ({ ...job, id: job._id }))) ?? [];
 
     useFocusEffect(
         useCallback(() => {
@@ -37,22 +42,31 @@ export const JobListScreen: React.FC<Props> = ({ navigation }) => {
         setIsPulling(false);
     };
 
+    const handleStatusPress = (label: string) => {
+        // toggle off if already active
+        setActiveStatus(prev => (prev === label ? undefined : label));
+    };
+
+    const handleDatePress = (label: string) => {
+        setActiveDate(label);
+    };
+
     return (
         <View style={{ flex: 1 }} className="bg-white">
             <View style={{ flexShrink: 0 }}>
                 <DashboardHeader
-                    totalApplications={27}
-                    upcomingInterview={{
-                        company: 'Google',
-                        role: 'UX Engineer',
-                        datetime: 'Tomorrow, 10:00 AM',
-                    }}
-                    pendingFollowUps={3}
-                    recentApplication={{
-                        jobTitle: 'Senior Product Designer',
-                        company: 'Acme Corporation',
-                        daysAgo: 2,
-                    }}
+                    total={firstPage?.total ?? 0}
+                    statusCounts={firstPage?.statusCounts}
+                    upcomingInterview={firstPage?.upcomingInterview}
+                    pendingFollowUps={firstPage?.pendingFollowUps}
+                    recentApplication={firstPage?.recentApplication}
+                    activeStatus={activeStatus}
+                    activeDate={activeDate}
+                    onStatusPress={handleStatusPress}
+                    onDatePress={handleDatePress}
+                    onInterviewPress={() => console.log('Go to interview')}
+                    onFollowUpPress={() => setActiveStatus('Follow Up')}
+                    onRecentPress={() => console.log('Go to recent')}
                 />
             </View>
 
@@ -86,7 +100,11 @@ export const JobListScreen: React.FC<Props> = ({ navigation }) => {
                         </View>
                     ) : null
                 }
-                ListFooterComponent={isFetchingNextPage ? <ActivityIndicator size="small" color="#56ab91" /> : null}
+                ListFooterComponent={
+                    isFetchingNextPage ? (
+                        <ActivityIndicator size="small" color="#56ab91" style={{ marginVertical: 16 }} />
+                    ) : null
+                }
             />
             <BottomNav />
         </View>
