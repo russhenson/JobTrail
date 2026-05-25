@@ -55,3 +55,29 @@ describe('formatDisplay', () => {
         expect(formatDisplay('bad-date', 'datetime')).toBe('');
     });
 });
+
+describe('parseOrNow - edge cases', () => {
+    it('should handle null-like values', () => {
+        const result = parseOrNow('null');
+        expect(result).toBeInstanceOf(Date);
+    });
+
+    it('should handle random garbage string', () => {
+        const before = Date.now();
+        const result = parseOrNow('$$$$####');
+        const after = Date.now();
+        expect(result.getTime()).toBeGreaterThanOrEqual(before);
+        expect(result.getTime()).toBeLessThanOrEqual(after);
+    });
+});
+
+describe('formatDisplay - edge cases', () => {
+    it('should handle ISO strings with different timezones', () => {
+        const result = formatDisplay('2025-06-15T00:00:00+08:00', 'date');
+        expect(result).toMatch(/^\d{2} \w{3} \d{4}$/);
+    });
+
+    it('should not throw for unusual but parseable formats', () => {
+        expect(() => formatDisplay('January 20 2025', 'date')).not.toThrow();
+    });
+});

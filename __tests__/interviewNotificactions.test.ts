@@ -91,6 +91,47 @@ describe('scheduleInterviewNotifications', () => {
         expect(exactCall).toBeDefined();
         expect(exactCall[1].timestamp).toBe(dayjs(interviewDatetime).valueOf());
     });
+
+    // edge cases
+    it('should NOT schedule if interviewDatetime is an invalid string', async () => {
+        await scheduleInterviewNotifications({
+            ...mockJob,
+            interviewDatetime: 'not-a-date',
+        });
+
+        expect(notifee.createTriggerNotification).not.toHaveBeenCalled();
+    });
+
+    it('should NOT schedule if interviewDatetime is empty string', async () => {
+        await scheduleInterviewNotifications({
+            ...mockJob,
+            interviewDatetime: '',
+        });
+
+        expect(notifee.createTriggerNotification).not.toHaveBeenCalled();
+    });
+
+    it('should still cancel even if some notifications were never scheduled', async () => {
+        await cancelInterviewNotifications('nonexistent-job');
+
+        // should still attempt to cancel all 4 without throwing
+        expect(notifee.cancelNotification).toHaveBeenCalledTimes(4);
+        expect(notifee.cancelNotification).toHaveBeenCalledWith('interview-nonexistent-job-10');
+        expect(notifee.cancelNotification).toHaveBeenCalledWith('interview-nonexistent-job-exact');
+    });
+
+    it('exact notification body should mention the job role and company', async () => {
+        await scheduleInterviewNotifications({
+            ...mockJob,
+            interviewDatetime: dayjs().add(1, 'day').toISOString(),
+        });
+
+        const calls = (notifee.createTriggerNotification as jest.Mock).mock.calls;
+        const exactCall = calls.find(([n]) => n.id === 'interview-job123-exact');
+
+        expect(exactCall[0].body).toContain(mockJob.role);
+        expect(exactCall[0].body).toContain(mockJob.company);
+    });
 });
 
 describe('cancelInterviewNotifications', () => {
