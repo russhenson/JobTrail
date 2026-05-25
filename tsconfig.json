@@ -4,12 +4,13 @@
         "types": ["jest"],
         "paths": {
             "@_assets/*": ["./src/assets/*"],
-            "@_components": ["./src/components/index.tsx"],
+            "@_components": ["./src/components/index.ts"],
+            "@_constants": ["./src/constants/index.ts"],
             "@_hooks/*": ["./src/hooks/*"],
             "@_navigation/*": ["./src/navigation/*"],
-            "@_screens": ["./src/screens/index.tsx"],
+            "@_screens": ["./src/screens/index.ts"],
             "@_types/*": ["./src/types/*"],
-            "@_utils": ["./src/utils/index.tsx"]
+            "@_utils": ["./src/utils/index.ts"]
         }
     },
     "include": ["**/*.ts", "**/*.tsx", "nativewind-env.d.ts"],
