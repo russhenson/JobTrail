@@ -6,7 +6,23 @@ A job application tracker built for the hustle. Log every application, track you
 
 ## Screenshots
 
-> _Add screenshots here_
+<p align="center">
+  <img src="screenshots/welcome.png" width="220" alt="Welcome" />
+  <img src="screenshots/login.png" width="220" alt="Login" />
+  <img src="screenshots/signup.png" width="220" alt="Sign Up" />
+</p>
+<p align="center">
+  <sub>Welcome &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Login &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Sign Up</sub>
+</p>
+
+<p align="center">
+  <img src="screenshots/dashboard.png" width="220" alt="Dashboard" />
+  <img src="screenshots/add-application.png" width="220" alt="Add Application" />
+  <img src="screenshots/modify-application.png" width="220" alt="Edit Application" />
+</p>
+<p align="center">
+  <sub>Dashboard &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Add Application &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Edit Application</sub>
+</p>
 
 ---
 
@@ -40,6 +56,32 @@ A job application tracker built for the hustle. Log every application, track you
 - Dashboard with live stats per status
 - Interview reminders via local notifications (10s, 30s, 1min, and exact time)
 - Motivational nudges when you need them most
+
+---
+## Usage
+
+### Option A — Use the test account
+Log in with the following credentials:
+
+```
+Username: test
+Password: 12345678
+```
+
+### Option B — Create your own account
+1. Open the app
+2. Tap **Sign Up** on the welcome screen
+3. Fill in your details and register
+4. Log in with your new credentials
+
+### Using the app
+- Tap the **+** button to add a new job application
+- Fill in the required fields (company, role, location, date applied, status, job type, setup)
+- Optional fields include salary, application link, interview schedule, recruiter details, and notes
+- Tap a job card to edit or delete it
+- Use the **status chips** on the dashboard to filter by application status
+- Use the **date filters** to narrow down by when you applied
+- If an interview is scheduled, local notifications will fire as reminders
 
 ---
 
