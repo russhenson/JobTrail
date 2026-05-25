@@ -4,8 +4,7 @@ import { VStack } from '@_components';
 import { useState } from 'react';
 import Icon from '@react-native-vector-icons/material-design-icons';
 import { formatName } from '@_utils';
-
-type IconName = React.ComponentProps<typeof Icon>['name'];
+import { IconName } from '@_types/ui';
 
 interface InputProps<T extends FieldValues> {
     name: Path<T>;
