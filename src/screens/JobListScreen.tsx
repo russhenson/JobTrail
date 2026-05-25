@@ -2,7 +2,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@_types/navigation';
 import { DashboardHeader, BottomNav, JobCard } from '@_components';
 import { FlatList, ActivityIndicator } from 'react-native';
-import { useJobs } from '@_hooks/useJobs';
+import { useJobs, useDashboard } from '@_hooks/useJobs';
 import { View, Text } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { useCallback, useState } from 'react';
@@ -20,46 +20,42 @@ export const JobListScreen: React.FC<Props> = ({ navigation }) => {
     };
 
     const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, refetch } = useJobs(filters);
+    const { data: dashboard } = useDashboard();
 
     const queryClient = useQueryClient();
     const [isPulling, setIsPulling] = useState(false);
-
-    // pull dashboard data from first page
-    const firstPage = data?.pages[0];
 
     const jobs = data?.pages.flatMap(page => page.jobs.map(job => ({ ...job, id: job._id }))) ?? [];
 
     useFocusEffect(
         useCallback(() => {
             queryClient.invalidateQueries({ queryKey: ['jobs'] });
+            queryClient.invalidateQueries({ queryKey: ['jobs-dashboard'] });
             // eslint-disable-next-line react-hooks/exhaustive-deps
         }, []),
     );
 
     const handleRefresh = async () => {
         setIsPulling(true);
-        await refetch();
+        await Promise.all([refetch(), queryClient.refetchQueries({ queryKey: ['jobs-dashboard'] })]);
         setIsPulling(false);
     };
 
     const handleStatusPress = (label: string) => {
-        // toggle off if already active
         setActiveStatus(prev => (prev === label ? undefined : label));
     };
 
-    const handleDatePress = (label: string) => {
-        setActiveDate(label);
-    };
+    const handleDatePress = (label: string) => setActiveDate(label);
 
     return (
         <View style={{ flex: 1 }} className="bg-white">
             <View style={{ flexShrink: 0 }}>
                 <DashboardHeader
-                    total={firstPage?.total ?? 0}
-                    statusCounts={firstPage?.statusCounts}
-                    upcomingInterview={firstPage?.upcomingInterview}
-                    pendingFollowUps={firstPage?.pendingFollowUps}
-                    recentApplication={firstPage?.recentApplication}
+                    total={dashboard?.total ?? 0}
+                    statusCounts={dashboard?.statusCounts}
+                    upcomingInterview={dashboard?.upcomingInterview}
+                    pendingFollowUps={dashboard?.pendingFollowUps ?? 0}
+                    recentApplication={dashboard?.recentApplication}
                     activeStatus={activeStatus}
                     activeDate={activeDate}
                     onStatusPress={handleStatusPress}
@@ -70,7 +66,6 @@ export const JobListScreen: React.FC<Props> = ({ navigation }) => {
                 />
             </View>
 
-            {/* SCROLL AREA */}
             <FlatList
                 style={{ flex: 1 }}
                 contentContainerStyle={{

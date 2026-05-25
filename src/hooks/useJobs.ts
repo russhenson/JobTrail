@@ -1,4 +1,4 @@
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { api } from '@_utils';
 
 export type StatusCounts = {
@@ -52,6 +52,23 @@ export type JobsResponse = {
     pendingFollowUps: number;
     recentApplication: RecentApplication | null;
 };
+
+const fetchDashboard = async (): Promise<{
+    total: number;
+    statusCounts: StatusCounts;
+    upcomingInterview: UpcomingInterview | null;
+    pendingFollowUps: number;
+    recentApplication: RecentApplication | null;
+}> => {
+    const res = await api.get('/jobs/dashboard');
+    return res.data;
+};
+
+export const useDashboard = () =>
+    useQuery({
+        queryKey: ['jobs-dashboard'],
+        queryFn: fetchDashboard,
+    });
 
 type Filters = {
     status?: string;

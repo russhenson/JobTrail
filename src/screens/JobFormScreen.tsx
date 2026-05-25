@@ -112,6 +112,8 @@ export const JobFormScreen: React.FC<Props> = ({ route, navigation }) => {
             }
 
             await queryClient.invalidateQueries({ queryKey: ['jobs'] });
+            await queryClient.invalidateQueries({ queryKey: ['jobs-dashboard'] });
+
             navigation.goBack();
         } catch (err: any) {
             console.error('SAVE JOB ERROR:', err.response?.data || err.message);

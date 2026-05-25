@@ -1,83 +1,30 @@
 const Job = require('../models/Job');
 const dayjs = require('dayjs');
+const mongoose = require('mongoose');
 
-// paginated
-exports.getJobs = async (req, res) => {
+exports.getDashboard = async (req, res) => {
     try {
-        // eslint-disable-next-line radix
-        const page = parseInt(req.query.page) || 1;
-        const limit = 3;
-        const skip = (page - 1) * limit;
+        const userId = new mongoose.Types.ObjectId(req.user.userId);
 
-        const { status, dateFilter } = req.query;
-
-        // ── Build query ──────────────────────────────────────────
-        const query = { userId: req.user.userId };
-
-        // Status filter
-        if (status) query.status = status;
-
-        // Date filter
-        if (dateFilter && dateFilter !== 'All') {
-            let from;
-            const now = dayjs();
-
-            if (dateFilter === 'Last 3 days') from = now.subtract(3, 'day');
-            else if (dateFilter === 'This week') from = now.startOf('week');
-            else if (dateFilter === 'This month') from = now.startOf('month');
-
-            if (from) {
-                query.dateApplied = {
-                    $gte: from.toISOString(),
-                    $lte: now.toISOString(),
-                };
-            }
-        }
-
-        // ── Status counts (always based on user's full data, ignoring filters) ──
         const allStatuses = ['Saved', 'Applied', 'Follow Up', 'Interview', 'Offer', 'Hired', 'Rejected'];
 
-        const statusCounts = await Job.aggregate([
-            { $match: { userId: req.user.userId } },
-            { $group: { _id: '$status', count: { $sum: 1 } } },
+        const [statusCounts, total, upcomingInterview, pendingFollowUps, recentApplication] = await Promise.all([
+            Job.aggregate([{ $match: { userId } }, { $group: { _id: '$status', count: { $sum: 1 } } }]),
+            Job.countDocuments({ userId }),
+            Job.findOne({
+                userId,
+                status: 'Interview',
+                interviewDatetime: { $gte: new Date().toISOString() },
+            }).sort({ interviewDatetime: 1 }),
+            Job.countDocuments({ userId, status: 'Follow Up' }),
+            Job.findOne({ userId }).sort({ createdAt: -1 }).select('role company createdAt'),
         ]);
-
         const statusMap = Object.fromEntries(allStatuses.map(s => [s, 0]));
         statusCounts.forEach(({ _id, count }) => {
             if (_id in statusMap) statusMap[_id] = count;
         });
 
-        // ── Upcoming interview ───────────────────────────────────
-        const upcomingInterview = await Job.findOne({
-            userId: req.user.userId,
-            status: 'Interview',
-            interviewDatetime: { $gte: new Date().toISOString() },
-        }).sort({ interviewDatetime: 1 });
-
-        // ── Pending follow-ups ───────────────────────────────────
-        const pendingFollowUps = await Job.countDocuments({
-            userId: req.user.userId,
-            status: 'Follow Up',
-        });
-
-        // ── Most recent application ──────────────────────────────
-        const recentApplication = await Job.findOne({ userId: req.user.userId })
-            .sort({ createdAt: -1 })
-            .select('role company createdAt');
-
-        // ── Paginated jobs ───────────────────────────────────────
-        const [jobs, filteredTotal, total] = await Promise.all([
-            Job.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit),
-            Job.countDocuments(query),
-            Job.countDocuments({ userId: req.user.userId }),
-        ]);
-
         res.json({
-            jobs,
-            page,
-            totalPages: Math.ceil(filteredTotal / limit),
-            hasNextPage: page < Math.ceil(filteredTotal / limit),
-            // dashboard data
             total,
             statusCounts: statusMap,
             upcomingInterview: upcomingInterview
@@ -95,6 +42,51 @@ exports.getJobs = async (req, res) => {
                       daysAgo: dayjs().diff(dayjs(recentApplication.createdAt), 'day'),
                   }
                 : null,
+        });
+    } catch (err) {
+        console.error('GET DASHBOARD ERROR:', err);
+        res.status(500).json({ error: 'Failed to fetch dashboard.' });
+    }
+};
+
+// ── getJobs — filters only, no dashboard data ─────────────────────────────
+exports.getJobs = async (req, res) => {
+    try {
+        // eslint-disable-next-line radix
+        const page = parseInt(req.query.page) || 1;
+        const limit = 3;
+        const skip = (page - 1) * limit;
+        const { status, dateFilter } = req.query;
+
+        const query = { userId: req.user.userId };
+
+        if (status) query.status = status;
+
+        if (dateFilter && dateFilter !== 'All') {
+            let from;
+            const now = dayjs();
+            if (dateFilter === 'Last 3 days') from = now.subtract(3, 'day');
+            else if (dateFilter === 'This week') from = now.startOf('week');
+            else if (dateFilter === 'This month') from = now.startOf('month');
+
+            if (from) {
+                query.dateApplied = {
+                    $gte: from.toISOString(),
+                    $lte: now.toISOString(),
+                };
+            }
+        }
+
+        const [jobs, filteredTotal] = await Promise.all([
+            Job.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit),
+            Job.countDocuments(query),
+        ]);
+
+        res.json({
+            jobs,
+            page,
+            totalPages: Math.ceil(filteredTotal / limit),
+            hasNextPage: page < Math.ceil(filteredTotal / limit),
         });
     } catch (err) {
         console.error('GET JOBS ERROR:', err);
