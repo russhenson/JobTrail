@@ -2,5 +2,5 @@ export * from './Layout';
 export * from './Button/Button';
 export * from './Forms/Input';
 export * from './Feedback/AlertMessage';
-export * from './Common/Badge';
-export * from './JobList'
+export * from './Common';
+export * from './JobList';
