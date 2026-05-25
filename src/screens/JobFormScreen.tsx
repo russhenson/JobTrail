@@ -15,11 +15,12 @@ import {
 } from '@_components';
 import { useForm, useWatch } from 'react-hook-form';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { api } from '@_utils';
 import { useQueryClient } from '@tanstack/react-query';
 import { Job } from '@_types/navigation';
 import { JOB_STATUSES, JOB_TYPES, JOB_SETUPS } from '@_constants';
 import Icon from '@react-native-vector-icons/material-design-icons';
+import { scheduleInterviewNotifications, cancelInterviewNotifications, api } from '@_utils';
+import dayjs from 'dayjs';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Form'>;
 
@@ -107,8 +108,29 @@ export const JobFormScreen: React.FC<Props> = ({ route, navigation }) => {
 
             if (isEdit) {
                 await api.put(`/jobs/${jobId}`, payload);
+
+                // sync - cancel old notifications and reschedule if interview changed
+                if (payload.interviewDatetime) {
+                    await cancelInterviewNotifications(jobId);
+                    await scheduleInterviewNotifications({
+                        id: jobId,
+                        role: payload.role,
+                        company: payload.company,
+                        interviewDatetime: payload.interviewDatetime,
+                    });
+                }
             } else {
-                await api.post('/jobs', payload);
+                const res = await api.post('/jobs', payload);
+                const newJobId = res.data._id;
+
+                if (payload.interviewDatetime && dayjs(payload.interviewDatetime).isAfter(dayjs())) {
+                    await scheduleInterviewNotifications({
+                        id: newJobId,
+                        role: payload.role,
+                        company: payload.company,
+                        interviewDatetime: payload.interviewDatetime,
+                    });
+                }
             }
 
             await queryClient.invalidateQueries({ queryKey: ['jobs'] });
@@ -133,7 +155,9 @@ export const JobFormScreen: React.FC<Props> = ({ route, navigation }) => {
                     try {
                         setDeleting(true);
                         await api.delete(`/jobs/${jobId}`);
+                        await cancelInterviewNotifications(jobId!);
                         await queryClient.invalidateQueries({ queryKey: ['jobs'] });
+                        await queryClient.invalidateQueries({ queryKey: ['jobs-dashboard'] });
                         navigation.goBack();
                     } catch (err: any) {
                         console.error('DELETE JOB ERROR:', err.response?.data || err.message);
