@@ -70,7 +70,7 @@ export const SignUpScreen: React.FC<Props> = ({ navigation }) => {
                 </VStack>
                 <HStack className="mt-4 justify-center px-4">
                     <Text className="text-brand-subtext">Already have an account?</Text>
-                    <Pressable onPress={() => navigation.replace('Login')} className="active:opacity-50">
+                    <Pressable onPress={() => navigation.replace('Login')} className="active:opacity-80">
                         <Text className="text-brand-default"> Login</Text>
                     </Pressable>
                 </HStack>

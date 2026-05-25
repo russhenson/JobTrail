@@ -9,16 +9,21 @@ export const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
     return (
         <ScreenContainer safeAreaBottom noPadding>
             <VStack className="flex-1">
-                <View className="flex-1 items-center justify-center overflow-hidden rounded-b-7xl bg-brand-default">
+                <View className="h-[50%] relative items-center justify-center overflow-hidden rounded-b-7xl bg-brand-default">
+                    <Image
+                        source={require('@_assets/blob-1.png')}
+                        className="h-full w-full opacity-80"
+                        resizeMode="cover"
+                    />
                     <Image
                         source={require('@_assets/jobtrail-icon.png')}
-                        className="h-full w-full opacity-80"
+                        className="h-64 w-64 opacity-80 absolute"
                         resizeMode="cover"
                     />
                 </View>
                 <VStack className="px-4 py-12">
                     <Text className="mb-2 text-4xl font-bold text-brand-text">Never Lose a Job Application Again</Text>
-                    <Text className="text-2xl text-brand-subtext">
+                    <Text className="text-xl text-brand-subtext">
                         Because "I think I applied there..." isn't a tracking system.
                     </Text>
                     <VStack className="mt-12 gap-4">

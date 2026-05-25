@@ -1,9 +1,10 @@
 import { View, Text, Image, Pressable } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@_types/navigation';
-import { VStack, Button, ScreenContainer, Input, HStack } from '@_components';
+import { VStack, Button, ScreenContainer, Input, HStack, AlertMessage } from '@_components';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
+import { api, AuthStorage } from '@_utils';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
 type Form = {
@@ -21,10 +22,23 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
     });
 
     const [hidePassword, setHidePassword] = useState(true);
+    const [loading, setLoading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-    const onSubmit = (data: Form) => {
-        console.log(data);
-        navigation.replace('Home');
+    const onSubmit = async (data: Form) => {
+        try {
+            setErrorMessage(null);
+            setLoading(true);
+
+            const res = await api.post('/auth/login', data);
+            await AuthStorage.saveSession(res.data);
+
+            navigation.reset({ index: 0, routes: [{ name: 'Home' }] });
+        } catch (err: any) {
+            setErrorMessage(err.response?.data?.error || 'An error occurred. Please try again.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -55,12 +69,12 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
                         rightIconName={hidePassword ? 'eye-off-outline' : 'eye-outline'}
                         onIconPress={() => setHidePassword(!hidePassword)}
                     />
-
-                    <Button className="mt-4" title="Login" onPress={handleSubmit(onSubmit)} />
+                    {errorMessage && <AlertMessage type="error" message={errorMessage} />}
+                    <Button className="mt-4" loading={loading} title="Login" onPress={handleSubmit(onSubmit)} />
                 </VStack>
                 <HStack className="mt-4 justify-center px-4">
                     <Text className="text-brand-subtext">Don't have an account?</Text>
-                    <Pressable onPress={() => navigation.replace('SignUp')} className="active:opacity-50">
+                    <Pressable onPress={() => navigation.replace('SignUp')} className="active:opacity-80">
                         <Text className="text-brand-default"> Sign up</Text>
                     </Pressable>
                 </HStack>
