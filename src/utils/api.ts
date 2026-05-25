@@ -3,7 +3,7 @@ import axios from 'axios';
 import { AuthStorage } from './authStorage';
 
 export const api = axios.create({
-    baseURL: 'jobtrail-production-f242.up.railway.app',
+    baseURL: 'https://jobtrail-production-f242.up.railway.app',
     headers: {
         'Content-Type': 'application/json',
     },
