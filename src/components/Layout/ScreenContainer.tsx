@@ -52,7 +52,7 @@ export const ScreenContainer = ({
     return (
         <SafeAreaView
             edges={safeAreaEdges}
-            className={`bg-brand-light ${className} flex-1 ${!scrollable ? paddingClass : ''}`}>
+            className={`bg-white ${className} flex-1 ${!scrollable ? paddingClass : ''}`}>
             {content}
         </SafeAreaView>
     );

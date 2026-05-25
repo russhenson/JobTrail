@@ -1,1 +1,2 @@
-export * from './jobList'
+export * from './jobList';
+export * from './jobForm';

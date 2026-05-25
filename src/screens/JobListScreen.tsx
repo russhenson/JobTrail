@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@_types/navigation';
-import { HStack, VStack, Badge, DashboardHeader, BottomNav } from '@_components';
+import { HStack, VStack, Badge, DashboardHeader, BottomNav, JobCard } from '@_components';
 import { IconName } from '@_types/ui';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
@@ -27,40 +27,21 @@ export const JobListScreen: React.FC<Props> = ({ navigation }) => {
                 onFollowUpPress={() => console.log('Go to follow-ups')}
                 onRecentPress={() => console.log('Go to recent')}
             />
+            
 
-            <View className="p-4">
-                <View
-                    className="rounded-2xl bg-white p-4"
-                    style={{
-                        shadowColor: '#1F1F1F',
-                        shadowOffset: { width: 0, height: 0 },
-                        shadowOpacity: 0.07,
-                        elevation: 1,
-                    }}>
-                    <HStack className="mb-3 items-center justify-between">
-                        <Text className="text-xs tracking-wide text-gray-400">Applied 12 Jan 2025</Text>
-                        <Badge label="Applied" />
-                    </HStack>
-                    <VStack className="mb-3 gap-0.5">
-                        <Text className="text-lg font-semibold leading-snug text-brand-text">
-                            Senior Product Designer
-                        </Text>
-                        <Text className="text-sm text-brand-subtext">Acme Corporation</Text>
-                    </VStack>
-                    <HStack className="mb-4 flex-wrap gap-1.5">
-                        {[
-                            { icon: 'map-marker-outline', label: 'Manila, PH' },
-                            { icon: 'office-building-outline', label: 'Hybrid' },
-                            { icon: 'briefcase-variant-outline', label: 'Full-time' },
-                        ].map(({ icon, label }) => (
-                            <Badge key={label} icon={icon as IconName} label={label} />
-                        ))}
-                    </HStack>
-                    <View className="border-t border-gray-100 pt-3">
-                        <Text className="text-sm text-gray-400">₱80,000 - ₱120,000 / mo</Text>
-                    </View>
-                </View>
-            </View>
+            <JobCard
+                company="Acme Corporation"
+                role="Senior Product Designer"
+                status="Applied"
+                dateApplied="12 Jan 2025"
+                location="Manila, PH"
+                jobSetup="Hybrid"
+                jobType="Full-time"
+                salary="₱80,000 - ₱120,000 / mo"
+                interviewDatetime="20 Jan 2025, 10:00 AM"
+                recruiterName="Jane Doe"
+                notes="Referral from a friend. Good vibes."
+            />
 
             <BottomNav />
         </VStack>

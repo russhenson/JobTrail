@@ -10,10 +10,7 @@ export const screens: ScreenConfig[] = [
     {
         name: 'Form',
         component: JobFormScreen,
-        options: ({ route }: any) => ({
-            title: route.params?.jobId ? 'Edit Job' : 'Add Job',
-            headerTitleAlign: 'center',
-        }),
+        options: { headerShown: false },
     },
 ];
 

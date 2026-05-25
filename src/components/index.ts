@@ -4,3 +4,4 @@ export * from './Forms/Input';
 export * from './Feedback/AlertMessage';
 export * from './Common';
 export * from './JobList';
+export * from './JobForm';

@@ -23,7 +23,7 @@ export const Button = ({
             {loading ? (
                 <ActivityIndicator color={outlined ? 'brand-default' : 'white'} />
             ) : (
-                <Text className={`${outlined ? 'text-brand-default' : 'text-white'} text-center text-lg font-medium`}>
+                <Text className={`${outlined ? 'text-brand-default' : 'text-white'} text-center font-medium`}>
                     {title}
                 </Text>
             )}

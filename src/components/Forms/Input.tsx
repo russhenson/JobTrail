@@ -21,6 +21,8 @@ interface InputProps<T extends FieldValues> {
     onIconPress?: () => void;
     secureTextEntry?: boolean;
     validate?: (value: any, formValues?: any) => string | boolean;
+    multiline?: boolean;
+    numberOfLines?: number;
 }
 
 export const Input = <T extends FieldValues>({
@@ -38,6 +40,8 @@ export const Input = <T extends FieldValues>({
     onIconPress,
     secureTextEntry,
     validate,
+    multiline = false,
+    numberOfLines = multiline ? 4 : undefined,
 }: InputProps<T>) => {
     const error = errors[name] as FieldError | undefined;
 
@@ -94,15 +98,17 @@ export const Input = <T extends FieldValues>({
                 render={({ field: { onChange, value } }) => (
                     <VStack className="relative">
                         <TextInput
-                            className={`rounded-2xl border ${borderColor} placeholder:text-brand-gray px-4 py-3`}
+                            className={`rounded-2xl border ${borderColor} placeholder:text-brand-gray px-4 py-3 text-sm `}
                             placeholder={placeholder}
                             value={value ?? ''}
                             editable={!disabled}
                             secureTextEntry={secureTextEntry}
                             onChangeText={onChange}
+                            multiline={multiline}
                             onFocus={() => setIsFocused(true)}
                             onBlur={() => setIsFocused(false)}
                             onSubmitEditing={() => Keyboard.dismiss()}
+                            numberOfLines={numberOfLines}
                         />
                         {rightIconName && (
                             <Pressable
@@ -122,7 +128,7 @@ export const Input = <T extends FieldValues>({
                 )}
             />
 
-            {error?.message && <Text className="mt-1 text-sm text-red-500">{error.message}</Text>}
+            {error?.message && <Text className="mt-1 text-xs text-red-500">{error.message}</Text>}
         </VStack>
     );
 };
