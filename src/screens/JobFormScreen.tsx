@@ -16,29 +16,20 @@ import { useForm, useWatch } from 'react-hook-form';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { api } from '@_utils';
 import { useQueryClient } from '@tanstack/react-query';
+import { Job } from '@_types/navigation';
 
 import { JOB_STATUSES, JOB_TYPES, JOB_SETUPS } from '@_constants';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Form'>;
 
-type Form = {
-    company: string;
-    role: string;
-    location: string;
-    dateApplied: string;
-    salary: string;
-    applicationLink: string;
-    interviewDatetime: string;
-    interviewLink: string;
-    notes: string;
-    recruiterName: string;
-    recruiterContact: string;
-};
-
 export const JobFormScreen: React.FC<Props> = ({ route, navigation }) => {
     const insets = useSafeAreaInsets();
 
-    const jobId = route.params?.jobId;
+    const params = route.params;
+
+    const jobId = params?.id;
+    const job = params?.job;
+
     const isEdit = !!jobId;
 
     const queryClient = useQueryClient();
@@ -47,29 +38,31 @@ export const JobFormScreen: React.FC<Props> = ({ route, navigation }) => {
         control,
         handleSubmit,
         formState: { errors },
-    } = useForm<Form>({
+    } = useForm<Job>({
         defaultValues: {
-            company: '',
-            role: '',
-            location: '',
-            dateApplied: '',
-            salary: '',
-            applicationLink: '',
-            interviewDatetime: '',
-            interviewLink: '',
-            notes: '',
-            recruiterName: '',
-            recruiterContact: '',
+            company: job?.company || '',
+            role: job?.role || '',
+            location: job?.location || '',
+            dateApplied: job?.dateApplied || '',
+            salary: job?.salary || '',
+            applicationLink: job?.applicationLink || '',
+            interviewDatetime: job?.interviewDatetime || '',
+            interviewLink: job?.interviewLink || '',
+            notes: job?.notes || '',
+            recruiterName: job?.recruiterName || '',
+            recruiterContact: job?.recruiterContact || '',
         },
     });
 
-    const [status, setStatus] = useState('');
-    const [jobType, setJobType] = useState('');
-    const [jobSetup, setJobSetup] = useState('');
+    const [status, setStatus] = useState(job?.status ?? '');
+    const [jobType, setJobType] = useState(job?.jobType ?? '');
+    const [jobSetup, setJobSetup] = useState(job?.jobSetup ?? '');
+
     const [statusError, setStatusError] = useState(false);
     const [typeError, setTypeError] = useState(false);
     const [setupError, setSetupError] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
     const [loading, setLoading] = useState(false);
 
     const interviewDatetime = useWatch({ control, name: 'interviewDatetime' });
@@ -88,7 +81,7 @@ export const JobFormScreen: React.FC<Props> = ({ route, navigation }) => {
         handleSubmit(onSubmit)();
     };
 
-    const onSubmit = async (data: Form) => {
+    const onSubmit = async (data: Job) => {
         if (!status || !jobType || !jobSetup) {
             setErrorMessage('Please fill in all required fields.');
             return;
@@ -115,7 +108,7 @@ export const JobFormScreen: React.FC<Props> = ({ route, navigation }) => {
 
         try {
             setLoading(true);
-            await api.post('/jobs', payload);
+            await api.post('/jobs', payload); // todo: differentiate create vs update endpoint
             await queryClient.invalidateQueries({ queryKey: ['jobs'] });
             navigation.goBack();
         } catch (err: any) {

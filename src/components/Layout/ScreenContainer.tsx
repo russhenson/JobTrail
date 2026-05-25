@@ -31,7 +31,6 @@ export const ScreenContainer = ({
     if (scrollable) {
         content = (
             <ScrollView
-                contentInsetAdjustmentBehavior="automatic"
                 keyboardShouldPersistTaps="handled"
                 showsVerticalScrollIndicator={false}
                 className={paddingClass}

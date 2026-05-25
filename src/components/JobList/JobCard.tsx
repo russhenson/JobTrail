@@ -3,36 +3,29 @@ import { View, Text, Pressable } from 'react-native';
 import { HStack, VStack, Badge } from '@_components';
 import { IconName } from '@_types/ui';
 import Icon from '@react-native-vector-icons/material-design-icons';
+import { Job } from '@_types/navigation';
 
 type JobCardProps = {
-    company: string;
-    role: string;
-    status: string;
-    dateApplied: string;
-    location?: string;
-    jobSetup?: string;
-    jobType?: string;
-    salary?: string;
-    applicationLink?: string;
-    interviewDatetime?: string;
-    recruiterName?: string;
-    notes?: string;
+    onPress: () => void;
+    job: Job & { id: string };
 };
 
-export const JobCard: React.FC<JobCardProps> = ({
-    company,
-    role,
-    status,
-    dateApplied,
-    location,
-    jobSetup,
-    jobType,
-    salary,
-    applicationLink,
-    interviewDatetime,
-    recruiterName,
-    notes,
-}) => {
+export const JobCard: React.FC<JobCardProps> = ({ job, onPress }) => {
+    const {
+        company,
+        role,
+        status,
+        dateApplied,
+        location,
+        jobSetup,
+        jobType,
+        salary,
+        applicationLink,
+        interviewDatetime,
+        recruiterName,
+        notes,
+    } = job;
+
     const pills = [
         location && { icon: 'map-marker-outline', label: location },
         jobSetup && { icon: 'office-building-outline', label: jobSetup },
@@ -41,8 +34,8 @@ export const JobCard: React.FC<JobCardProps> = ({
 
     return (
         <Pressable
-            onPress={() => console.log('View job:', company)}
-            className="rounded-4xl bg-white p-4 active:opacity-80"
+            onPress={onPress}
+            className="rounded-4xl bg-white p-4 active:opacity-70"
             style={{
                 shadowColor: '#1F1F1F',
                 shadowOffset: { width: 0, height: 0 },

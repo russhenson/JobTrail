@@ -21,7 +21,7 @@ type Job = {
 
 type JobsResponse = {
     jobs: Job[];
-    page: number;
+page: number;
     totalPages: number;
     hasNextPage: boolean;
 };

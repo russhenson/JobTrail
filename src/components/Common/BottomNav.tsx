@@ -28,7 +28,7 @@ export const BottomNav: React.FC = () => {
             {/* FAB */}
             <Pressable
                 onPress={handleAddPress}
-                className="absolute -top-10 self-center rounded-full border-[6px] border-gray-50 bg-brand-default p-4 active:bg-[#53a68c]"
+                className="absolute -top-10 self-center rounded-full border-[6px] border-white/50 bg-brand-default p-4 active:bg-[#53a68c]"
                 style={{ zIndex: 10, left: '50%', marginLeft: -38 / 2 }}>
                 <Icon name="plus" size={38} color="white" />
             </Pressable>
