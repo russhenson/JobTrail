@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 const generateToken = require('../utils/generateToken');
 
-// REGISTER
+// REGISTER — hashes the password before saving, never stores it plain
 exports.register = async (req, res) => {
     try {
         const { firstName, lastName, username, password } = req.body;
@@ -31,7 +31,7 @@ exports.register = async (req, res) => {
     }
 };
 
-// LOGIN
+// LOGIN — compares the hashed password, returns a token + user info on success
 exports.login = async (req, res) => {
     try {
         const { username, password } = req.body;

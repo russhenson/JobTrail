@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+// Saves and reads the auth token + user info from the device's local storage
 const TOKEN_KEY = 'auth_token';
 const USER_KEY = 'auth_user';
 

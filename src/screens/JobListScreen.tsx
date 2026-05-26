@@ -14,6 +14,7 @@ export const JobListScreen: React.FC<Props> = ({ navigation }) => {
     const [activeStatus, setActiveStatus] = useState<string | undefined>(undefined);
     const [activeDate, setActiveDate] = useState('All');
 
+    // Only pass dateFilter if it's not 'All' — the API ignores it when undefined
     const filters = {
         status: activeStatus,
         dateFilter: activeDate !== 'All' ? activeDate : undefined,
@@ -25,8 +26,10 @@ export const JobListScreen: React.FC<Props> = ({ navigation }) => {
     const queryClient = useQueryClient();
     const [isPulling, setIsPulling] = useState(false);
 
+    // Flatten all pages into a single array; also remap _id to id for FlatList's keyExtractor
     const jobs = data?.pages.flatMap(page => page.jobs.map(job => ({ ...job, id: job._id }))) ?? [];
 
+    // Refresh both the job list and dashboard stats every time this screen comes into focus
     useFocusEffect(
         useCallback(() => {
             queryClient.invalidateQueries({ queryKey: ['jobs'] });
@@ -40,6 +43,7 @@ export const JobListScreen: React.FC<Props> = ({ navigation }) => {
         setIsPulling(false);
     };
 
+    // Tapping the same status again deselects it (toggle behavior)
     const handleStatusPress = (label: string) => {
         setActiveStatus(prev => (prev === label ? undefined : label));
     };
@@ -80,6 +84,7 @@ export const JobListScreen: React.FC<Props> = ({ navigation }) => {
                     </View>
                 )}
                 showsVerticalScrollIndicator={false}
+                // Load the next page when the user scrolls 50% from the bottom
                 onEndReached={() => {
                     if (hasNextPage && !isFetchingNextPage) fetchNextPage();
                 }}

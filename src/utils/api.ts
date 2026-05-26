@@ -3,6 +3,8 @@ import axios from 'axios';
 import { Platform } from 'react-native';
 import { AuthStorage } from './authStorage';
 
+// In dev: Android uses 10.0.2.2 (emulator's alias for localhost), iOS uses localhost
+// In prod: hits the Railway deployment
 const BASE_URL = __DEV__
     ? Platform.OS === 'android'
         ? 'http://10.0.2.2:5050'
@@ -16,7 +18,7 @@ export const api = axios.create({
     },
 });
 
-// attach token to every request
+// Intercepts every outgoing request and attaches the Bearer token from storage
 api.interceptors.request.use(
     async config => {
         const token = await AuthStorage.getToken();
@@ -30,7 +32,8 @@ api.interceptors.request.use(
     error => Promise.reject(error),
 );
 
-// auto logout
+// Intercepts every response — if the server returns 401 (unauthorized), clear storage
+// This handles expired or invalid tokens without needing to check manually in every screen
 api.interceptors.response.use(
     response => response,
     async error => {

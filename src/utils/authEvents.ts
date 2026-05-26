@@ -1,3 +1,5 @@
+// Simple event bus used to notify RootNavigator when login/logout happens
+// so it can re-check the token and switch between AuthNavigator and AppNavigator
 type Listener = () => void;
 
 let listeners: Listener[] = [];

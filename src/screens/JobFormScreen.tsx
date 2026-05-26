@@ -29,6 +29,7 @@ export const JobFormScreen: React.FC<Props> = ({ route, navigation }) => {
     const params = route.params;
     const jobId = params?.id;
     const job = params?.job;
+    // If a job was passed in via route params, we're in edit mode; otherwise it's a new entry
     const isEdit = !!jobId;
 
     const queryClient = useQueryClient();
@@ -53,10 +54,12 @@ export const JobFormScreen: React.FC<Props> = ({ route, navigation }) => {
         },
     });
 
+    // status, jobType, jobSetup are chip selections — not regular inputs, so they're outside useForm
     const [status, setStatus] = useState(job?.status ?? '');
     const [jobType, setJobType] = useState(job?.jobType ?? '');
     const [jobSetup, setJobSetup] = useState(job?.jobSetup ?? '');
 
+    // Separate error states for chips since useForm can't validate them directly
     const [statusError, setStatusError] = useState(false);
     const [typeError, setTypeError] = useState(false);
     const [setupError, setSetupError] = useState(false);
@@ -64,8 +67,11 @@ export const JobFormScreen: React.FC<Props> = ({ route, navigation }) => {
     const [loading, setLoading] = useState(false);
     const [deleting, setDeleting] = useState(false);
 
+    // Watch the interview datetime field live — used to conditionally show the interview link input
     const interviewDatetime = useWatch({ control, name: 'interviewDatetime' });
 
+    // Manually trigger chip validation before submitting the form
+    // handleSubmit only validates registered inputs — chips need manual checking
     const onPress = () => {
         const hasStatusError = !status;
         const hasTypeError = !jobType;
@@ -109,7 +115,7 @@ export const JobFormScreen: React.FC<Props> = ({ route, navigation }) => {
             if (isEdit) {
                 await api.put(`/jobs/${jobId}`, payload);
 
-                // sync - cancel old notifications and reschedule if interview changed
+                // Cancel old notifications and reschedule with the updated interview time
                 if (payload.interviewDatetime) {
                     await cancelInterviewNotifications(jobId);
                     await scheduleInterviewNotifications({
@@ -133,6 +139,7 @@ export const JobFormScreen: React.FC<Props> = ({ route, navigation }) => {
                 }
             }
 
+            // Invalidate both queries so the list and dashboard header both refresh
             await queryClient.invalidateQueries({ queryKey: ['jobs'] });
             await queryClient.invalidateQueries({ queryKey: ['jobs-dashboard'] });
 
@@ -146,6 +153,7 @@ export const JobFormScreen: React.FC<Props> = ({ route, navigation }) => {
     };
 
     const onDelete = () => {
+        // Shows a native confirmation alert before deleting
         Alert.alert('Delete Application', `Remove ${job?.role} at ${job?.company}? This can't be undone.`, [
             { text: 'Cancel', style: 'cancel' },
             {
@@ -155,7 +163,7 @@ export const JobFormScreen: React.FC<Props> = ({ route, navigation }) => {
                     try {
                         setDeleting(true);
                         await api.delete(`/jobs/${jobId}`);
-                        await cancelInterviewNotifications(jobId!);
+                        await cancelInterviewNotifications(jobId!); // also cancel any scheduled notifications for this job
                         await queryClient.invalidateQueries({ queryKey: ['jobs'] });
                         await queryClient.invalidateQueries({ queryKey: ['jobs-dashboard'] });
                         navigation.goBack();

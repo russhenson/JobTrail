@@ -1,5 +1,8 @@
 const jwt = require("jsonwebtoken");
 
+// Checks that the request has a valid JWT token
+// Attach this to any route that requires the user to be logged in
+// On success, it puts the decoded user info (userId) into req.user
 const protect = (req, res, next) => {
   const authHeader = req.headers.authorization;
 

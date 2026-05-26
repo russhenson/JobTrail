@@ -5,6 +5,8 @@ import AuthNavigator from './AuthNavigator';
 import AppNavigator from './AppNavigator';
 import { AuthStorage, authEvents } from '@_utils';
 
+// Entry point of navigation — checks for a saved token and decides
+// whether to show the login/signup flow or the main app
 export default function RootNavigator() {
     const [loading, setLoading] = useState(true);
     const [token, setToken] = useState<string | null>(null);

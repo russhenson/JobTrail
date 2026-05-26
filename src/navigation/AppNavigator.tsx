@@ -6,6 +6,8 @@ import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
+// Screens shown when the user is logged in (Home, Form)
+// Also sets up React Query here so all screens can use it
 export default function AppNavigator() {
     const queryClient = new QueryClient();
 

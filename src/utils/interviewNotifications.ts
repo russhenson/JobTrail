@@ -3,6 +3,8 @@ import dayjs from 'dayjs';
 
 const CHANNEL_ID = 'interview-reminders';
 
+// Android requires a channel before any notification can be shown
+// It's safe to call this every time — it's a no-op if the channel already exists
 const ensureChannel = async () => {
     await notifee.createChannel({
         id: CHANNEL_ID,
@@ -24,7 +26,7 @@ export const scheduleInterviewNotifications = async (job: {
 
     await ensureChannel();
 
-    // for demo purposes, we'll schedule 3 notifications at 10s, 30s, and 60s from now
+    // Demo mode: fires at 10s, 30s, and 60s from now instead of actual reminder intervals
     const triggers = [
         { seconds: 10, label: '10 seconds' },
         { seconds: 30, label: '30 seconds' },
@@ -36,6 +38,7 @@ export const scheduleInterviewNotifications = async (job: {
 
         await notifee.createTriggerNotification(
             {
+                // ID includes the job ID and interval so multiple jobs don't overwrite each other
                 id: `interview-${job.id}-${seconds}`,
                 title: '📅 Interview Reminder',
                 body: `${label} reminder: ${job.role} at ${job.company} — ${interviewTime.format('MMM D [at] h:mm A')}`,
@@ -77,9 +80,11 @@ export const scheduleInterviewNotifications = async (job: {
     console.log(`Scheduled 4 notifications for: ${job.role} at ${job.company}`);
 };
 
+// Cancels all 4 notifications tied to a job (3 demo intervals + the exact interview time)
+// Call this on delete or when rescheduling after an edit
 export const cancelInterviewNotifications = async (jobId: string) => {
     const ids = [10, 30, 60].map(s => `interview-${jobId}-${s}`);
-    ids.push(`interview-${jobId}-exact`); // ← cancel exact too
+    ids.push(`interview-${jobId}-exact`);
 
     await Promise.all(ids.map(id => notifee.cancelNotification(id)));
 };

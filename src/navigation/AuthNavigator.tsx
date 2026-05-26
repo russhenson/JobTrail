@@ -5,6 +5,7 @@ import { RootStackParamList } from '../types/navigation';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
+// Screens shown when the user is NOT logged in (Welcome, Login, SignUp)
 export default function AuthNavigator() {
     return (
         <Stack.Navigator initialRouteName="Welcome">

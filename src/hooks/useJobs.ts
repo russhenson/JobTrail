@@ -64,6 +64,7 @@ const fetchDashboard = async (): Promise<{
     return res.data;
 };
 
+// Fetches the stats shown in the dashboard header (totals, upcoming interview, etc.)
 export const useDashboard = () =>
     useQuery({
         queryKey: ['jobs-dashboard'],
@@ -87,6 +88,7 @@ const fetchJobs =
         return res.data;
     };
 
+// Fetches the paginated job list — loads more as the user scrolls down
 export const useJobs = (filters: Filters = {}) =>
     useInfiniteQuery({
         queryKey: ['jobs', filters],
